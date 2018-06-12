@@ -53,6 +53,31 @@ public interface ProjectRepository extends RestRepository<Project, Integer> {
 					+ " WHERE " + VISIBLE_PROJECTS + " AND (UPPER(p.name) LIKE UPPER(CONCAT(CONCAT('%',:criteria),'%'))"
 					+ "       OR UPPER(p.description) LIKE UPPER(CONCAT(CONCAT('%',:criteria),'%'))) GROUP BY p")
 	Page<Object[]> findAllLight(String user, String criteria, Pageable page);
+	
+	/**
+	 * Return all {@link Project} objects matching on toggle filter with the given name.The other constraints are :
+	 * <ul>
+	 * <li>The given user is a system administrator</li>
+	 * <li>Or, the given user is the team leader</li>
+	 * <li>Or, the given user is member of the group associated to this project via the CacheGroup</li>
+	 * </ul>
+	 * 
+	 * @param user
+	 *            The principal user name
+	 * @param criteria
+	 *            the optional criteria to match.
+	 * @param page
+	 *            the pagination.
+	 * @param toggle
+	 *            toggle filter tag.
+	 * @return all {@link Project} objects with the given name. Insensitive case search is used.
+	 */
+	@Query(value = "SELECT p, COUNT(DISTINCT s.id) FROM Project AS p LEFT JOIN p.subscriptions AS s LEFT JOIN p.cacheGroups AS cpg LEFT JOIN cpg.group AS cg"
+			+ " WHERE p.disable = :toggle AND " + VISIBLE_PROJECTS + " AND (UPPER(p.name) LIKE UPPER(CONCAT(CONCAT('%',:criteria),'%'))"
+			+ "       OR UPPER(p.description) LIKE UPPER(CONCAT(CONCAT('%',:criteria),'%'))) GROUP BY p", countQuery = "SELECT COUNT(DISTINCT p) FROM Project AS p LEFT JOIN p.cacheGroups AS cpg LEFT JOIN cpg.group AS cg"
+					+ " WHERE " + VISIBLE_PROJECTS + " AND (UPPER(p.name) LIKE UPPER(CONCAT(CONCAT('%',:criteria),'%'))"
+					+ "       OR UPPER(p.description) LIKE UPPER(CONCAT(CONCAT('%',:criteria),'%'))) GROUP BY p")
+	Page<Object[]> findAllLightToggle(String user, String criteria, Pageable page, boolean toggle);
 
 	/**
 	 * Return all {@link Project} objects having at least one subscription and with light information. The visibility is

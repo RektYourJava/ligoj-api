@@ -36,6 +36,12 @@ public class BasicProjectVo extends NamedAuditedBean<SimpleUserOrg, Integer> imp
 	 */
 	@NotNull
 	private SimpleUserOrg teamLeader;
+	
+	/**
+	 * team leader
+	 */
+	@NotNull
+	private boolean disable;
 
 	/**
 	 * Unique technical and yet readable name.

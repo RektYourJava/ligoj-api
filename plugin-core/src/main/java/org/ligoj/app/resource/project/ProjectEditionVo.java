@@ -47,5 +47,8 @@ public class ProjectEditionVo extends DescribedAuditedBean<UserOrg, Integer> {
 	@Size(max = 100)
 	@Pattern(regexp = SimpleUser.USER_PATTERN_WRAPPER)
 	private String teamLeader;
+	
+	@NotNull
+	private boolean disable;
 
 }

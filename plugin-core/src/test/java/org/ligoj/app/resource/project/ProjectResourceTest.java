@@ -77,7 +77,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		// create a mock URI info with pagination information
 		final UriInfo uriInfo = newFindAllParameters();
 		initSpringSecurityContext("fdaugan");
-		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, null);
+		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, null, 0);
 		Assertions.assertEquals(2, result.getData().size());
 
 		final ProjectLightVo project = result.getData().get(0);
@@ -103,7 +103,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		// create a mock URI info with pagination information
 		final UriInfo uriInfo = newFindAllParameters();
 		initSpringSecurityContext("user");
-		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "gStack");
+		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "gStack", 0);
 		Assertions.assertEquals(1, result.getData().size());
 
 		Assertions.assertEquals("gStack", result.getData().get(0).getName());
@@ -117,7 +117,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		// create a mock URI info with pagination information
 		final UriInfo uriInfo = newFindAllParameters();
 
-		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, null);
+		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, null, 0);
 		Assertions.assertEquals(1, result.getData().size());
 		Assertions.assertEquals("gStack", result.getData().get(0).getName());
 
@@ -131,7 +131,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		final UriInfo uriInfo = newFindAllParameters();
 
 		initSpringSecurityContext("any");
-		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "MDA");
+		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "MDA", 0);
 		Assertions.assertEquals(0, result.getData().size());
 	}
 
@@ -141,7 +141,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		final UriInfo uriInfo = newFindAllParameters();
 
 		initSpringSecurityContext("fdaugan");
-		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "mdA");
+		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "mdA", 0);
 		Assertions.assertEquals(1, result.getData().size());
 
 		final ProjectLightVo project = result.getData().get(0);
@@ -154,7 +154,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		final UriInfo uriInfo = newFindAllParameters();
 
 		initSpringSecurityContext("alongchu");
-		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "gStack");
+		final TableItem<ProjectLightVo> result = resource.findAll(uriInfo, "gStack", 0);
 		Assertions.assertEquals(1, result.getData().size());
 
 		final ProjectLightVo project = result.getData().get(0);
@@ -249,7 +249,8 @@ public class ProjectResourceTest extends AbstractOrgTest {
 	}
 
 	/**
-	 * Test {@link ProjectResource#findById(int)} when a subscription has no parameter.
+	 * Test {@link ProjectResource#findById(int)} when a subscription has no
+	 * parameter.
 	 */
 	@Test
 	public void findByIdNoParameter() {
@@ -391,6 +392,7 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		vo.setDescription("D<small>e</small>s<a href=\"#/\">cription</a>");
 		vo.setPkey("artifact-id");
 		vo.setTeamLeader(DEFAULT_USER);
+		vo.setDisable(true);
 		resource.update(vo);
 		em.clear();
 
@@ -399,7 +401,9 @@ public class ProjectResourceTest extends AbstractOrgTest {
 		Assertions.assertEquals("D<small>e</small>s<a href=\"#/\">cription</a>", projFromDB.getDescription());
 		Assertions.assertEquals("artifact-id", projFromDB.getPkey());
 		Assertions.assertEquals(DEFAULT_USER, projFromDB.getTeamLeader());
+		Assertions.assertTrue(projFromDB.isDisable());
 	}
+
 	/**
 	 * Create with invalid HTML content.
 	 */

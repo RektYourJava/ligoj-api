@@ -72,6 +72,11 @@ public class Project extends AbstractNamedAuditedEntity<Integer> implements IDes
 	 * Team Leader user name
 	 */
 	private String teamLeader;
+	
+	/**
+	 * Tag
+	 */
+	private boolean disable;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)

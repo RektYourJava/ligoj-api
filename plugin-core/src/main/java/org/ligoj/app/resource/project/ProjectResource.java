@@ -79,14 +79,15 @@ public class ProjectResource {
 		ORDERED_COLUMNS.put("description", "description");
 		ORDERED_COLUMNS.put("createdDate", "createdDate");
 		ORDERED_COLUMNS.put("teamLeader", "teamLeader");
-
+		ORDERED_COLUMNS.put("disable", "disable");
 		// This mapping does not works for native spring-data "findAll"
 		ORDERED_COLUMNS.put("name", "name");
 		ORDERED_COLUMNS.put("nbSubscriptions", "COUNT(s)");
 	}
 
 	/**
-	 * Converter from {@link Project} to {@link ProjectVo} with the associated subscriptions.
+	 * Converter from {@link Project} to {@link ProjectVo} with the associated
+	 * subscriptions.
 	 *
 	 * @param project
 	 *            Entity to convert.
@@ -112,7 +113,8 @@ public class ProjectResource {
 	}
 
 	/**
-	 * Converter from {@link Project} to {@link ProjectLightVo} with subscription count.
+	 * Converter from {@link Project} to {@link ProjectLightVo} with subscription
+	 * count.
 	 *
 	 * @param resultset
 	 *            Entity to convert and the associated subscription count.
@@ -125,20 +127,21 @@ public class ProjectResource {
 	}
 
 	/**
-	 * Converter from {@link Project} to {@link ProjectLightVo} without subscription count.
+	 * Converter from {@link Project} to {@link ProjectLightVo} without subscription
+	 * count.
 	 *
 	 * @param entity
 	 *            Entity to convert.
 	 * @return The project description without subscription counter.
 	 */
 	public ProjectLightVo toVoLight(final Project entity) {
-
 		// Convert users, project and subscriptions
 		final ProjectLightVo vo = new ProjectLightVo();
 		vo.copyAuditData(entity, toUser());
 		DescribedBean.copy(entity, vo);
 		vo.setPkey(entity.getPkey());
 		vo.setTeamLeader(toUser().apply(entity.getTeamLeader()));
+		vo.setDisable(entity.isDisable());
 		return vo;
 	}
 
@@ -151,11 +154,13 @@ public class ProjectResource {
 		DescribedBean.copy(vo, entity);
 		entity.setPkey(vo.getPkey());
 		entity.setTeamLeader(vo.getTeamLeader());
+		entity.setDisable(vo.isDisable());
 		return entity;
 	}
 
 	/**
-	 * Retrieve all project with pagination, and filtered. A visible project is attached to a visible group.
+	 * Retrieve all project with pagination, and filtered. A visible project is
+	 * attached to a visible group.
 	 *
 	 * @param uriInfo
 	 *            pagination data.
@@ -165,9 +170,16 @@ public class ProjectResource {
 	 */
 	@GET
 	public TableItem<ProjectLightVo> findAll(@Context final UriInfo uriInfo,
-			@QueryParam(DataTableAttributes.SEARCH) final String criteria) {
-		final Page<Object[]> findAll = repository.findAllLight(securityHelper.getLogin(),
-				StringUtils.trimToEmpty(criteria), paginationJson.getPageRequest(uriInfo, ORDERED_COLUMNS));
+			@QueryParam(DataTableAttributes.SEARCH) final String criteria, @QueryParam("toggle") final int toggle) {
+		final Page<Object[]> findAll;
+
+		if (toggle != 0) {
+			findAll = repository.findAllLightToggle(securityHelper.getLogin(), StringUtils.trimToEmpty(criteria),
+					paginationJson.getPageRequest(uriInfo, ORDERED_COLUMNS), toggle == 1 ? false : true);
+		} else {
+			findAll = repository.findAllLight(securityHelper.getLogin(), StringUtils.trimToEmpty(criteria),
+					paginationJson.getPageRequest(uriInfo, ORDERED_COLUMNS));
+		}
 
 		// apply pagination and prevent lazy initialization issue
 		return paginationJson.applyPagination(uriInfo, findAll, this::toVoLightCount);
@@ -187,8 +199,8 @@ public class ProjectResource {
 	}
 
 	/**
-	 * Return a project with all subscription parameters and their status. The security is checked regarding the current
-	 * user.
+	 * Return a project with all subscription parameters and their status. The
+	 * security is checked regarding the current user.
 	 *
 	 * @param pkey
 	 *            Project pkey.
@@ -231,6 +243,7 @@ public class ProjectResource {
 
 		DescribedBean.copy(vo, project);
 		project.setTeamLeader(vo.getTeamLeader());
+		project.setDisable(vo.isDisable());
 		repository.saveAndFlush(project);
 	}
 

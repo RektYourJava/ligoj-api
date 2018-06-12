@@ -129,6 +129,7 @@ public class ToVoConverterTest {
 		entity.setPkey("PK");
 		entity.setTeamLeader("U3");
 		entity.setSubscriptions(Arrays.asList(subscription, subscription2));
+		entity.setDisable(false);
 		final ProjectVo vo = converter.apply(entity);
 
 		// Check
@@ -142,6 +143,7 @@ public class ToVoConverterTest {
 		Assertions.assertEquals("U3", vo.getTeamLeader().getId());
 		Assertions.assertEquals(1, vo.getId().intValue());
 		Assertions.assertEquals(2, vo.getSubscriptions().size());
+		Assertions.assertFalse(vo.isDisable());
 
 		// Check the statuses and their order by node
 		final List<SubscriptionVo> subscriptionsVo = vo.getSubscriptions();

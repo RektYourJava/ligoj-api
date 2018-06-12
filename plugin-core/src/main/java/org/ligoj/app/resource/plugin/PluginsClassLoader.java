@@ -438,4 +438,11 @@ public class PluginsClassLoader extends URLClassLoader {
 	private String toFragmentId(final Node node) {
 		return node.isRefining() ? node.getId().substring(node.getRefined().getId().length() + 1) : node.getId();
 	}
+
+	public boolean isSafeMode() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
 }

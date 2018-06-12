@@ -67,6 +67,7 @@ class ToVoConverter implements Function<Project, ProjectVo> {
 		vo.copyAuditData(entity, userConverter);
 		DescribedBean.copy(entity, vo);
 		vo.setPkey(entity.getPkey());
+		vo.setDisable(entity.isDisable());
 		vo.setTeamLeader(userConverter.apply(entity.getTeamLeader()));
 
 		// Build the subscriptions
